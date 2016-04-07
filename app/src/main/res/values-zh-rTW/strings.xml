@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OpenWechat</string>
+
+    <string name="wc_discover">發現</string>
+    <string name="wc_scan">掃描QR Code</string>
+    <string name="wc_moments">朋友圈</string>
+    <string name="wc_releasepic">照片</string>
+    <string name="wc_add_friend">添加朋友</string>
+</resources>
