@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
                 MyApplication.sOpenType = Reference.RANK_MOMENTS;
                 break;
             case R.id.btn_add_mp:
-                MyApplication.sOpenType = Reference.RANK_ADD_MP;
+                MyApplication.sOpenType = Reference.RANK_MP_SEARCH;
                 break;
         }
         MyApplication.sStartJump = true;

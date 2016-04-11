@@ -3,6 +3,8 @@ package com.vkei.wechatdirect.application;
 import android.app.Application;
 import android.util.Log;
 
+import com.vkei.wechatdirect.reference.Reference;
+
 import java.util.HashMap;
 import java.util.Map;
 
