@@ -45,82 +45,92 @@ public class MyAccessibilityService extends AccessibilityService {
         if ((MyApplication.sStartJump && Reference.WECHAT_MAIN_UI.equals(event.getClassName()))
                 || mLoading) {
             Log.i(TAG, "class name : " + event.getClassName().toString());
-            if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH) {
-                List<AccessibilityNodeInfo> list = null;
-                if (event.getSource() != null) {
-                    list = event.getSource()
-                            .findAccessibilityNodeInfosByText(getString(R.string.wc_scan));
-                }
-                if (descInfo == null) {
-                    getNodeInfos(event);
-                }
-                if (!mHasFind || (list == null || list.size() < 1)) {
-                    Log.i(TAG, "hasfind : " + mHasFind + ", list: " + (list == null ? null : list.size()));
-                    mLoading = true;
-                    return;
-                }
-                AccessibilityHelper.performClick(descInfo);
-                mHasFind = false;
-                descInfo = null;
-                Log.i(TAG, "hasfind : " + mHasFind + ", list: " + list.size());
-            } else {
-                List<AccessibilityNodeInfo> list = getNodeInfos(event);
-                if (list == null || list.size() < 1) {
-                    mLoading = true;
-                    return;
-                }
-                AccessibilityHelper.performClick(list.get(list.size() - 1));
-            }
-            mJumpSuccess = true;
-            MyApplication.sStartJump = false;
-            mLoading = false;
-            jumpPage();
+            startFirstJump(event);
         } else if (!isFirstJump()
                 && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
                 || isSearching(event)) {
-            mSearching = false;
-            if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE) {
-                AccessibilityNodeInfo info = null;
-                if (event.getSource() != null) {
-                    info = event.getSource()
-                            .findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
-                }
-                if (info == null) {
-                    Log.i(TAG, "search");
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Bundle arguments = new Bundle();
-                        arguments.putCharSequence(
-                                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE
-                                , "VKEI518");
-                        info.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                    } else {
-                        info.performAction(AccessibilityNodeInfo.ACTION_PASTE);
-                    }
-                }
+            startJump(event);
+        }
+    }
+
+    /**
+     * 进行第一次界面跳转
+     *
+     * @param event 辅助功能响应事件
+     */
+    private void startFirstJump(AccessibilityEvent event) {
+        if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH) {
+            List<AccessibilityNodeInfo> list = null;
+            if (event.getSource() != null) {
+                list = event.getSource()
+                        .findAccessibilityNodeInfosByText(getString(R.string.wc_scan));
             }
-            List<AccessibilityNodeInfo> list = getNodeInfos(event);
-            if (list == null || list.size() < 1) {
-                if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE) {
-                    mSearching = true;
-                    return;
-                } else if (MyApplication.sOpenType == Reference.RANK_MOMENTS_SEND) {
-                    if (descInfo != null) {
-                        AccessibilityHelper.performClick(descInfo);
-                        descInfo = null;
-                    }
-                    mJumpSuccess = mHasFind;
-                    mHasFind = false;
-                } else {
-                    mJumpSuccess = false;
-                }
-                jumpPage();
+            getNodeInfos(event);
+            if (!mHasFind || (list == null || list.size() < 1)) {
+                Log.i(TAG, "hasfind : " + mHasFind + ", list: " + (list == null ? null : list.size()));
+                mLoading = true;
                 return;
             }
-            mJumpSuccess = true;
-            jumpPage();
+            mHasFind = false;
+            Log.i(TAG, "hasfind : " + mHasFind + ", list: " + list.size());
+        } else {
+            List<AccessibilityNodeInfo> list = getNodeInfos(event);
+            if (list == null || list.size() < 1) {
+                mLoading = true;
+                return;
+            }
             AccessibilityHelper.performClick(list.get(list.size() - 1));
         }
+        mJumpSuccess = true;
+        MyApplication.sStartJump = false;
+        mLoading = false;
+        jumpPage();
+    }
+
+    /**
+     * 进行界面跳转
+     *
+     * @param event 辅助功能响应事件
+     */
+    private void startJump(AccessibilityEvent event) {
+        mSearching = false;
+        if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE) {
+            AccessibilityNodeInfo info = null;
+            if (event.getSource() != null) {
+                info = event.getSource()
+                        .findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+            }
+            if (info == null) {
+                Log.i(TAG, "search");
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Bundle arguments = new Bundle();
+                    arguments.putCharSequence(
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE
+                            , "VKEI518");
+                    info.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                } else {
+                    info.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+                }
+            }
+        }
+        List<AccessibilityNodeInfo> list = getNodeInfos(event);
+        if (list == null || list.size() < 1) {
+            if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE) {
+                mSearching = true;
+                return;
+            } else if (MyApplication.sOpenType == Reference.RANK_MOMENTS_SEND) {
+                mJumpSuccess = mHasFind;
+                mHasFind = false;
+            } else {
+                mJumpSuccess = false;
+            }
+            jumpPage();
+            return;
+        }
+        mJumpSuccess = true;
+        jumpPage();
+        AccessibilityHelper.performClick(list.get(list.size() - 1));
     }
 
     /**
@@ -158,7 +168,7 @@ public class MyAccessibilityService extends AccessibilityService {
             case Reference.RANK_SCAN://当前处于扫一扫界面
                 MyApplication.init();
                 break;
-            case Reference.RANK_MOMENTS://当前出去朋友圈界面
+            case Reference.RANK_MOMENTS://当前处于朋友圈界面
                 MyApplication.sOpenType = Reference.RANK_MOMENTS_SEND;
                 break;
             case Reference.RANK_MOMENTS_SEND:
@@ -243,7 +253,8 @@ public class MyAccessibilityService extends AccessibilityService {
             CharSequence desrc = info.getContentDescription();
             if (desrc != null && matchFlag.equals(desrc.toString().trim())) {
                 mHasFind = true;
-                descInfo = info;
+                info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//                descInfo = info;
             } else {
                 final int size = info.getChildCount();
                 for (int i = 0; i < size; i++) {
