@@ -1,4 +1,4 @@
-package com.vkei.wechatdirect.utils;
+package com.noyet.wechatdirect.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

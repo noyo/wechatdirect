@@ -1,9 +1,9 @@
-package com.vkei.wechatdirect.application;
+package com.noyet.wechatdirect.application;
 
 import android.app.Application;
 import android.util.Log;
 
-import com.vkei.wechatdirect.reference.Reference;
+import com.noyet.wechatdirect.reference.Reference;
 
 import java.util.HashMap;
 import java.util.Map;

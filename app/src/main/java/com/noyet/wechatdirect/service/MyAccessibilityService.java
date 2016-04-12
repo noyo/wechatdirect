@@ -1,4 +1,4 @@
-package com.vkei.wechatdirect.service;
+package com.noyet.wechatdirect.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.os.Build;
@@ -8,10 +8,10 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
-import com.vkei.wechatdirect.R;
-import com.vkei.wechatdirect.application.MyApplication;
-import com.vkei.wechatdirect.reference.Reference;
-import com.vkei.wechatdirect.utils.AccessibilityHelper;
+import com.noyet.wechatdirect.R;
+import com.noyet.wechatdirect.application.MyApplication;
+import com.noyet.wechatdirect.reference.Reference;
+import com.noyet.wechatdirect.utils.AccessibilityHelper;
 
 import java.util.List;
 

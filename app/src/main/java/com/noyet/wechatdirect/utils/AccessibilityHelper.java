@@ -1,4 +1,4 @@
-package com.vkei.wechatdirect.utils;
+package com.noyet.wechatdirect.utils;
 
 import android.accessibilityservice.AccessibilityService;
 import android.os.Build;

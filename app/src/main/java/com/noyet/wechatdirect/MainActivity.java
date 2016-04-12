@@ -1,4 +1,4 @@
-package com.vkei.wechatdirect;
+package com.noyet.wechatdirect;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,9 +10,9 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.vkei.wechatdirect.application.MyApplication;
-import com.vkei.wechatdirect.reference.Reference;
-import com.vkei.wechatdirect.service.MyAccessibilityService;
+import com.noyet.wechatdirect.application.MyApplication;
+import com.noyet.wechatdirect.reference.Reference;
+import com.noyet.wechatdirect.service.MyAccessibilityService;
 
 public class MainActivity extends Activity {
     private Intent intent;

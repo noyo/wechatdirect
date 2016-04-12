@@ -1,7 +1,4 @@
-package com.vkei.wechatdirect.reference;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.noyet.wechatdirect.reference;
 
 /**
  * com.vkei.openwechat.reference
