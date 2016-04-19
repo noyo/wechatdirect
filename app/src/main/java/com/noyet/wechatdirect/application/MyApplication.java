@@ -22,23 +22,27 @@ public class MyApplication extends Application {
     public static int sOpenType;//0-扫一扫  1-朋友圈 2-聊天界面
     public static Map<Integer, Integer> sDoubleClick;//强制双击
     public static boolean sStartJump;
-    private static MyApplication instance;
+//    private static MyApplication instance;
 
     static {
         sStartJump = false;
-        instance = new MyApplication();
+//        instance = new MyApplication();
         sDoubleClick = new HashMap<>();
         sDoubleClick.put(0, 0);
         sDoubleClick.put(1, 0);
         sDoubleClick.put(2, 0);
     }
 
-    private MyApplication() {
+    public MyApplication() {
+
     }
 
-    public static MyApplication getInstance() {
-        return instance;
-    }
+//    private MyApplication() {
+//    }
+//
+//    public static MyApplication getInstance() {
+//        return instance;
+//    }
 
 
     public static void init() {

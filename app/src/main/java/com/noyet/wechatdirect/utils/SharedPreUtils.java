@@ -11,7 +11,7 @@ import android.content.SharedPreferences;
  *         功能:
  *         修改者，修改日期，修改内容.
  */
-public class SharedPreUtils {
+class SharedPreUtils {
     private static SharedPreferences preferences;
     private static final String SPNAME = "wechat";
 
@@ -19,7 +19,7 @@ public class SharedPreUtils {
         preferences = context.getSharedPreferences(SPNAME, 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     public static int getPreferences(Context context, String key) {

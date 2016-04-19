@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">OpenWechat</string>
 
-    <string name="wc_discover">Discover</string>
+    <!-- <string name="wc_discover">Discover</string> -->
     <string name="wc_scan">Scan QR Code</string>
     <string name="wc_moments">Moments</string>
     <string name="wc_releasepic">Photos</string>

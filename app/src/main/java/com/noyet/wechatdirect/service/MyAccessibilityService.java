@@ -1,11 +1,19 @@
 package com.noyet.wechatdirect.service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.noyet.wechatdirect.R;
@@ -26,16 +34,11 @@ import java.util.List;
 public class MyAccessibilityService extends AccessibilityService {
     private final static String TAG = "MyAccessibilityService";
 
-    private AccessibilityNodeInfo descInfo = null;
     private boolean mHasFind = false;
     private boolean mJumpSuccess = true;
     private boolean mLoading = false;
     private boolean mSearching = false;
-
-    @Override
-    protected void onServiceConnected() {
-        super.onServiceConnected();
-    }
+    private boolean mPasted = false;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -72,7 +75,7 @@ public class MyAccessibilityService extends AccessibilityService {
                 return;
             }
             mHasFind = false;
-            Log.i(TAG, "hasfind : " + mHasFind + ", list: " + list.size());
+            Log.i(TAG, "hasfind : " + false + ", list: " + list.size());
         } else {
             List<AccessibilityNodeInfo> list = getNodeInfos(event);
             if (list == null || list.size() < 1) {
@@ -102,7 +105,7 @@ public class MyAccessibilityService extends AccessibilityService {
             }
             if (info == null) {
                 Log.i(TAG, "search");
-            } else {
+            } else if (!mPasted) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Bundle arguments = new Bundle();
                     arguments.putCharSequence(
@@ -110,14 +113,22 @@ public class MyAccessibilityService extends AccessibilityService {
                             , "VKEI518");
                     info.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
                 } else {
+                    ClipboardManager cmb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    cmb.setPrimaryClip(ClipData.newPlainText(null, "VKEI518"));
                     info.performAction(AccessibilityNodeInfo.ACTION_PASTE);
                 }
+                mPasted = true;
             }
         }
         List<AccessibilityNodeInfo> list = getNodeInfos(event);
         if (list == null || list.size() < 1) {
-            if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE) {
+            if (mHasFind && MyApplication.sOpenType == Reference.RANK_MP_SEARCH_RESULT) {
+                mJumpSuccess = mHasFind;
+                mHasFind = false;
+            } else if (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE
+                    || MyApplication.sOpenType == Reference.RANK_MP_SEARCH_RESULT) {
                 mSearching = true;
+                Log.i(TAG, "search: " + true);
                 return;
             } else if (MyApplication.sOpenType == Reference.RANK_MOMENTS_SEND) {
                 mJumpSuccess = mHasFind;
@@ -136,18 +147,19 @@ public class MyAccessibilityService extends AccessibilityService {
     /**
      * 是否正在查询公众号
      *
-     * @return
+     * @return boolean
      */
     private boolean isSearching(AccessibilityEvent event) {
-        return MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE
-                && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && mSearching;
+        return mSearching && ((MyApplication.sOpenType == Reference.RANK_MP_SEARCH_PASTE
+                && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                || (MyApplication.sOpenType == Reference.RANK_MP_SEARCH_RESULT
+                && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED));
     }
 
     /**
      * 判断是否是第一次跳转
      *
-     * @return
+     * @return boolean
      */
     private boolean isFirstJump() {
         return MyApplication.sStartJump || MyApplication.sOpenType == Reference.RANK_SCAN
@@ -159,6 +171,7 @@ public class MyAccessibilityService extends AccessibilityService {
      * 跳转界面
      */
     private void jumpPage() {
+        mPasted = false;
         if (!mJumpSuccess) {
             Log.i(TAG, "jump error: openType == " + MyApplication.sOpenType);
             MyApplication.init();
@@ -193,10 +206,13 @@ public class MyAccessibilityService extends AccessibilityService {
      * 查找目标控件信息
      *
      * @param event 辅助功能响应事件
-     * @return
+     * @return List<AccessibilityNodeInfo>
      */
     private List<AccessibilityNodeInfo> getNodeInfos(AccessibilityEvent event) {
         final AccessibilityNodeInfo info = event.getSource();
+        if (info == null) {
+            return null;
+        }
         switch (MyApplication.sOpenType) {
             case Reference.RANK_SCAN:
                 return info.findAccessibilityNodeInfosByText(getString(R.string.wc_scan));
@@ -204,16 +220,21 @@ public class MyAccessibilityService extends AccessibilityService {
             case Reference.RANK_MOMENTS:
                 return info.findAccessibilityNodeInfosByText(getString(R.string.wc_moments));
             case Reference.RANK_MOMENTS_SEND:
-                recycleByDes(info, Reference.WECHAT_FIND_BY_DESC);
+                recycleByDes(info, Reference.WECHAT_FIND_BY_DESC, true);
                 return null;
             case Reference.RANK_MOMENTS_SEND_PIC:
                 return info.findAccessibilityNodeInfosByText(getString(R.string.wc_releasepic));
 
             case Reference.RANK_MP_SEARCH:
-                recycleByDes(info, Reference.WECHAT_SEARCH_BY_DESC);
+                recycleByDes(info, Reference.WECHAT_SEARCH_BY_DESC, true);
                 return null;
             case Reference.RANK_MP_SEARCH_PASTE:
-                return info.findAccessibilityNodeInfosByText(getString(R.string.wc_mp_search_text));
+                recycleByDes(getRootInActiveWindow(), "-", true);
+                return null;
+//                return info.findAccessibilityNodeInfosByText(getString(R.string.wc_mp_search_text));
+            case Reference.RANK_MP_SEARCH_RESULT:
+                recycleByDes(info, "VKEI518", false);
+                return null;
         }
         return null;
     }
@@ -248,10 +269,15 @@ public class MyAccessibilityService extends AccessibilityService {
      * @param info      当前节点
      * @param matchFlag 控件的文字描述
      */
-    public void recycleByDes(AccessibilityNodeInfo info, String matchFlag) {
-        if (info != null) {
+    public void recycleByDes(AccessibilityNodeInfo info, String matchFlag, boolean equal) {
+        if (info != null && !mHasFind) {
             CharSequence desrc = info.getContentDescription();
-            if (desrc != null && matchFlag.equals(desrc.toString().trim())) {
+            if (info.getChildCount() == 0 && "-".equals(matchFlag)) {
+                Log.i(TAG, "root nodeinfo : " +info.toString());
+            }
+            if (!equal) Log.i(TAG, "desrc: " + desrc);
+            if (desrc != null && ((equal && matchFlag.equals(desrc.toString().trim()))
+                    || (!equal && desrc.toString().trim().contains(matchFlag)))) {
                 mHasFind = true;
                 info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 //                descInfo = info;
@@ -260,7 +286,7 @@ public class MyAccessibilityService extends AccessibilityService {
                 for (int i = 0; i < size; i++) {
                     AccessibilityNodeInfo childInfo = info.getChild(i);
                     if (childInfo != null) {
-                        recycleByDes(childInfo, matchFlag);
+                        recycleByDes(childInfo, matchFlag, equal);
                     }
                 }
             }

@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeAllMask|typeWindowStateChanged"
     android:packageNames="com.tencent.mm, com.vkei.wechatdirect"
-    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFeedbackType="feedbackAllMask"
     android:notificationTimeout="100"
+    android:canRequestEnhancedWebAccessibility="true"
+    android:canRequestTouchExplorationMode="true"
     android:accessibilityFlags="flagDefault"
     android:canRetrieveWindowContent="true"/>

@@ -5,24 +5,46 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.noyet.wechatdirect.application.MyApplication;
 import com.noyet.wechatdirect.reference.Reference;
 import com.noyet.wechatdirect.service.MyAccessibilityService;
 
-public class MainActivity extends Activity {
-    private Intent intent;
+public class MainActivity extends Activity implements View.OnClickListener {
+    private Intent mIntent;
+    /*private WindowManager mWm;
+    private WindowManager.LayoutParams mParams;
+    private View mFloatView;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        intent = getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        init();
+    }
+
+    private void init() {
+        mIntent = getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        /*mWm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
+        mParams.gravity = Gravity.CENTER;
+        mFloatView = LayoutInflater.from(this).inflate(R.layout.fw_jump_hint, null);
+        mFloatView.findViewById(R.id.fw_back).setOnClickListener(this);*/
     }
 
     public void test(View view) {
@@ -42,7 +64,8 @@ public class MainActivity extends Activity {
                 break;
         }
         MyApplication.sStartJump = true;
-        startActivity(intent);
+        startActivity(mIntent);
+        /*mWm.addView(mFloatView, mParams);*/
     }
 
     /**
@@ -76,6 +99,8 @@ public class MainActivity extends Activity {
                     mContext.getApplicationContext().getContentResolver(),
                     android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
         } catch (Settings.SettingNotFoundException e) {
+            Log.i(MainActivity.class.getCanonicalName(), "exception of isAccessibilitySettingsOn: " + e.toString());
+            return false;
         }
         TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
 
@@ -95,5 +120,17 @@ public class MainActivity extends Activity {
         }
 
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fw_back:
+                /*if (mFloatView != null) {
+                    mWm.removeView(mFloatView);
+                }*/
+                break;
+        }
+
     }
 }

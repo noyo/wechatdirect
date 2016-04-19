@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.noyet.wechatdirect"
+<manifest xmlns:tools="http://schemas.android.com/tools"
+          package="com.noyet.wechatdirect"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
@@ -18,13 +19,16 @@
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_INSTALL"/>
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED"/>
     <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

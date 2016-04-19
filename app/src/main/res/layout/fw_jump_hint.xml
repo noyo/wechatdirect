@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="->step1->step2\n->step3->step4"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="30sp"/>
+
+    <ImageView
+        android:contentDescription="fw_hide"
+        android:id="@+id/fw_back"
+        android:src="@android:drawable/ic_delete"
+        android:layout_width="40dp"
+        android:scaleType="center"
+        android:layout_height="40dp"/>
+</LinearLayout>

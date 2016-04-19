@@ -5,6 +5,6 @@
     <string name="wc_moments">朋友圈</string>
     <string name="wc_releasepic">照片</string>
     <string name="wc_add_friend">添加朋友</string>
-    <string name="wc_add_mp_input">微信号/QQ号/手机号</string>
-    <string name="wc_mp_search_text">朋友圈、公众号、文章等</string>
+    <!-- <string name="wc_add_mp_input">微信号/QQ号/手机号</string> -->
+    <!-- <string name="wc_mp_search_text">朋友圈、公众号、文章等</string> -->
 </resources>
